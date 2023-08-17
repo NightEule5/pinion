@@ -1,0 +1,10 @@
+[package]
+name = "pinion-rs"
+version = "0.1.0"
+edition = "2021"
+description = "A collection of miscellaneous utils that compliment the standard library."
+authors = ["Strixpyrr"]
+keywords = ["utils"]
+license = "Apache-2.0"
+homepage = "https://github.com/NightEule5/pinion/"
+repository = "https://github.com/NightEule5/pinion/"

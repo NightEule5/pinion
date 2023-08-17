@@ -1,0 +1,8 @@
+debug/
+target/
+!src/**/target/
+**/*.rs.bk
+
+.idea/
+*.iml
+.vscode/
