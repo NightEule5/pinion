@@ -8,3 +8,10 @@ keywords = ["utils"]
 license = "Apache-2.0"
 homepage = "https://github.com/NightEule5/pinion/"
 repository = "https://github.com/NightEule5/pinion/"
+
+[features]
+default = ["primes"]
+primes = ["dep:primal"]
+
+[dependencies]
+primal = { version = "0.3.2", optional = true }
