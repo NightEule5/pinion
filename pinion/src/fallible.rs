@@ -35,6 +35,18 @@ pub trait OptionExt<T>: sealed::SealedOptionExt {
 	/// Maps the option's contained value into a string. Shorthand for
 	/// `as_ref().map(ToString::to_string)`.
 	fn map_to_string(self) -> Option<String> where T: ToString;
+	/// Returns [`None`] if the option is [`None`], otherwise calls predicate with
+	/// the wrapped value and returns:
+	///
+	/// - `Ok(Some(t))` if `predicate` returns `Ok(true)` (where `t` is the wrapped
+	///   value)
+	/// - `Ok(None)` if `predicate` returns `false`
+	/// - `Err(e)` if `predicate` returns `Err(e)`
+	///
+	/// Similar to [`filter`], but with error handling in the `predicate`.
+	///
+	/// [`filter`]: Option::filter
+	fn try_filter<E>(self, predicate: impl FnOnce(&T) -> Result<bool, E>) -> Result<Option<T>, E>;
 }
 
 impl<T> OptionExt<T> for Option<T> {
@@ -54,6 +66,13 @@ impl<T> OptionExt<T> for Option<T> {
 
 	fn map_to_string(self) -> Option<String> where T: ToString {
 		Some(self?.to_string())
+	}
+
+	fn try_filter<E>(self, predicate: impl FnOnce(&T) -> Result<bool, E>) -> Result<Option<T>, E> {
+		match self {
+			Some(value) if predicate(&value)? => Ok(Some(value)),
+			_ => Ok(None)
+		}
 	}
 }
 
