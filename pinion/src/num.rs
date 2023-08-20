@@ -93,6 +93,7 @@ macro_rules! nums {
 
 			fn is_even(&self) -> bool { self % 2 == 0 }
 
+			#[cfg(feature = "primes")]
 			fn is_prime(&self) -> bool {
 				*self > 1 && primal::is_prime(*self as u64)
 			}
