@@ -97,6 +97,13 @@ pub trait ResultExt<T, E>: sealed::SealedResultExt {
 	/// ```
 	fn flick(self) -> Result<(), E>;
 
+	/// Drops a contained [`Ok`] value, replacing it with `value`. Useful in cases
+	/// where you don't care about an [`Ok`] value, and want to map it to a concrete
+	/// value. [`flick`](ResultExt::flick) is a special case. Behavior is similar
+	/// to [`map`](Option::map), but without transforming the existing value (i.e.
+	/// `map(|_| value)`).
+	fn supersede_with<R>(self, value: R) -> Result<R, E>;
+
 	/// Maps a contained [`Ok`] value into type `R` implementing the [`From`] trait.
 	/// Shorthand for `map(Into::into)`.
 	fn map_into<R: From<T>>(self) -> Result<R, E>;
@@ -105,7 +112,12 @@ pub trait ResultExt<T, E>: sealed::SealedResultExt {
 }
 
 impl<T, E> ResultExt<T, E> for Result<T, E> {
-	fn flick(self) -> Result<(), E> { self?; Ok(()) }
+	fn flick(self) -> Result<(), E> { self.supersede_with(()) }
+
+	fn supersede_with<R>(self, value: R) -> Result<R, E> {
+		self?;
+		Ok(value)
+	}
 
 	fn map_into<R: From<T>>(self) -> Result<R, E> { self.map(R::from) }
 
