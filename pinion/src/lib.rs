@@ -2,6 +2,8 @@
 
 mod fallible;
 mod num;
+mod ptr;
 
 pub use fallible::*;
 pub use num::*;
+pub use ptr::*;

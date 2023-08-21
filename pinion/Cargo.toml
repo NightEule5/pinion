@@ -12,6 +12,7 @@ repository = "https://github.com/NightEule5/pinion/"
 [features]
 default = []
 primes = ["dep:primal"]
+unsafe = []
 
 [dependencies]
 primal = { version = "0.3.2", optional = true }
