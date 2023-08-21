@@ -10,7 +10,7 @@ homepage = "https://github.com/NightEule5/pinion/"
 repository = "https://github.com/NightEule5/pinion/"
 
 [features]
-default = ["primes"]
+default = []
 primes = ["dep:primal"]
 
 [dependencies]
