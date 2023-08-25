@@ -35,6 +35,8 @@ pub trait OptionExt<T>: sealed::SealedOptionExt {
 	/// Maps the option's contained value into a string. Shorthand for
 	/// `as_ref().map(ToString::to_string)`.
 	fn map_to_string(self) -> Option<String> where T: ToString;
+	/// Updates the option's contained value with an `update` closure.
+	fn update<R>(&mut self, update: impl FnOnce(&mut T) -> R) -> Option<R>;
 	/// Returns [`None`] if the option is [`None`], otherwise calls predicate with
 	/// the wrapped value and returns:
 	///
@@ -66,6 +68,13 @@ impl<T> OptionExt<T> for Option<T> {
 
 	fn map_to_string(self) -> Option<String> where T: ToString {
 		Some(self?.to_string())
+	}
+
+	fn update<R>(&mut self, update: impl FnOnce(&mut T) -> R) -> Option<R> {
+		match self {
+			Some(v) => Some(update(v)),
+			None => None
+		}
 	}
 
 	fn try_filter<E>(self, predicate: impl FnOnce(&T) -> Result<bool, E>) -> Result<Option<T>, E> {
@@ -109,6 +118,10 @@ pub trait ResultExt<T, E>: sealed::SealedResultExt {
 	fn map_into<R: From<T>>(self) -> Result<R, E>;
 	/// Maps a contained [`Ok`] value into a string.
 	fn map_to_string(self) -> Result<String, E> where T: ToString;
+	/// Updates a contained [`Ok`] value with an `update` closure.
+	fn update<R>(&mut self, update: impl FnOnce(&mut T) -> R) -> Option<R>;
+	/// Updates a contained [`Err`] value with an `update` closure.
+	fn update_err<R>(&mut self, update: impl FnOnce(&mut E) -> R) -> Option<R>;
 }
 
 impl<T, E> ResultExt<T, E> for Result<T, E> {
@@ -123,5 +136,19 @@ impl<T, E> ResultExt<T, E> for Result<T, E> {
 
 	fn map_to_string(self) -> Result<String, E> where T: ToString {
 		Ok(self?.to_string())
+	}
+
+	fn update<R>(&mut self, update: impl FnOnce(&mut T) -> R) -> Option<R> {
+		match self {
+			Ok(v) => Some(update(v)),
+			_ => None
+		}
+	}
+
+	fn update_err<R>(&mut self, update: impl FnOnce(&mut E) -> R) -> Option<R> {
+		match self {
+			Err(e) => Some(update(e)),
+			_ => None
+		}
 	}
 }
